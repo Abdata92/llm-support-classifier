@@ -94,11 +94,19 @@ Assurez-vous d'avoir Python 3.10+ et Poetry installés.
 git clone [https://github.com/votre-compte/llm-support-classifier.git](https://github.com/votre-compte/llm-support-classifier.git)
 cd llm-support-classifier
 
+# installation de poetry 
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+
 # Activer la création du .venv localement (recommandé)
 poetry config virtualenvs.in-project true
 
+# générer le lock fil e
+poetry lock
+
 # Installer les dépendances
 poetry install
+
+
 
 ```
 
