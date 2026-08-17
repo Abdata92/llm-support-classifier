@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "llm-support-classifier"
+version = "0.1.0"
+description = "Classification automatique multilingue de tickets support par LLM Fine-Tuning"
+authors = ["Votre Nom <votre.email@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+transformers = "^4.40.0"
+peft = "^0.10.0"
+datasets = "^2.18.0"
+accelerate = "^0.28.0"
+bitsandbytes = "^0.43.0"
+fastapi = "^0.110.0"
+uvicorn = "^0.29.0"
+gradio = "^4.25.0"
+scikit-learn = "^1.4.0"
+pandas = "^2.2.0"
+pydantic = "^2.6.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.1.0"
+ruff = "^0.3.0"
+black = "^24.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
