@@ -16,8 +16,15 @@ data/processed/*
 models/
 checkpoints/
 *.pt
+*.pth
 *.safetensors
 *.bin
+*.onnx
+
+# Runs & Logs d'entraînement (Tensorboard, WandB, Trl)
+runs/
+wandb/
+. Which/
 
 # Notebooks checkpoints
 .ipynb_checkpoints/
