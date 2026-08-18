@@ -875,6 +875,23 @@ graph = ["objgraph (>=1.7.2)"]
 profile = ["gprof2dot (>=2022.7.29)"]
 
 [[package]]
+name = "docstring-parser"
+version = "0.18.0"
+description = "Parse Python docstrings in reST, Google and Numpydoc format"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "docstring_parser-0.18.0-py3-none-any.whl", hash = "sha256:b3fcbed555c47d8479be0796ef7e19c2670d428d72e96da63f3a40122860374b"},
+    {file = "docstring_parser-0.18.0.tar.gz", hash = "sha256:292510982205c12b1248696f44959db3cdd1740237a968ea1e2e7a900eeb2015"},
+]
+
+[package.extras]
+dev = ["pre-commit (>=2.16.0) ; python_version >= \"3.9\"", "pydoctor (>=25.4.0)", "pytest"]
+docs = ["pydoctor (>=25.4.0)"]
+test = ["pytest"]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.3.1"
 description = "Backport of PEP 654 (exception groups)"
@@ -4496,6 +4513,50 @@ tests = ["autopep8", "isort", "llnl-hatchet", "numpy", "pytest", "pytest-forked"
 tutorials = ["matplotlib", "pandas", "tabulate"]
 
 [[package]]
+name = "trl"
+version = "0.8.6"
+description = "Train transformer language models with reinforcement learning."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "trl-0.8.6-py3-none-any.whl", hash = "sha256:0c9ee3faa7a6ddc158debaea0f725edb3143b4cc43babc5b5a05374de3e6352c"},
+    {file = "trl-0.8.6.tar.gz", hash = "sha256:3785683f5b3e20d4b28481070dbdf736def42bcd6d3323e8a92f458925683da3"},
+]
+
+[package.dependencies]
+accelerate = "*"
+datasets = "*"
+numpy = ">=1.18.2"
+torch = ">=1.4.0"
+transformers = ">=4.31.0"
+tyro = ">=0.5.11"
+
+[package.extras]
+benchmark = ["deepspeed", "ghapi", "openrlbenchmark (==0.2.1a5)", "requests", "wandb"]
+deepspeed = ["deepspeed (>=0.9.5)"]
+dev = ["accelerate", "bitsandbytes (<=0.41.1)", "deepspeed", "deepspeed (>=0.9.5)", "diffusers (>=0.18.0)", "ghapi", "openrlbenchmark (==0.2.1a5)", "parameterized", "peft (>=0.4.0)", "pytest", "pytest-cov", "pytest-xdist", "requests", "wandb"]
+diffusers = ["diffusers (>=0.18.0)"]
+peft = ["peft (>=0.4.0)"]
+quantization = ["bitsandbytes (<=0.41.1)"]
+test = ["accelerate", "parameterized", "pytest", "pytest-cov", "pytest-xdist"]
+
+[[package]]
+name = "typeguard"
+version = "4.6.0"
+description = "Run-time type checker for Python"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "typeguard-4.6.0-py3-none-any.whl", hash = "sha256:79878165bb86f2cf5d41d159a0ff1792a796cf496882d2fe1b1c6c7049b9cdd7"},
+    {file = "typeguard-4.6.0.tar.gz", hash = "sha256:e7414f09111317de3e335de92cd397c5c0ca00b1cc1676de12e1d444a79b3f21"},
+]
+
+[package.dependencies]
+typing_extensions = ">=4.14.0"
+
+[[package]]
 name = "typer"
 version = "0.27.1"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
@@ -4541,6 +4602,27 @@ files = [
 
 [package.dependencies]
 typing-extensions = ">=4.15.0"
+
+[[package]]
+name = "tyro"
+version = "1.0.15"
+description = "CLI interfaces & config objects, from types"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "tyro-1.0.15-py3-none-any.whl", hash = "sha256:982da1d566005f1b2a6b56f6be6c6929c96f0e5fab9d61bc6097573ddfaf8d13"},
+    {file = "tyro-1.0.15.tar.gz", hash = "sha256:3f1d60887723eecb9c489f195d11f079c4a1f33df74b723552ad31ec57c667bb"},
+]
+
+[package.dependencies]
+docstring-parser = ">=0.16"
+typeguard = ">=4.0.0"
+typing-extensions = ">=4.13.0"
+
+[package.extras]
+dev = ["attrs (>=21.4.0)", "coverage[toml] (>=6.5.0)", "eval-type-backport (>=0.1.3)", "ml-collections (>=0.1.0)", "msgspec (>=0.18.6)", "mypy (>=1.4.1)", "omegaconf (>=2.2.2)", "pydantic (>=2.5.2,!=2.10.0)", "pyright (>=1.1.349,!=1.1.379)", "pytest (>=7.1.2)", "pytest-cov (>=3.0.0)", "pytest-xdist (>=3.5.0)", "pyyaml (>=6.0)", "shtab (>=1.5.6)", "ty (>=0.0.33)", "universal-pathlib (>=0.2.0)"]
+dev-nn = ["attrs (>=21.4.0)", "coverage[toml] (>=6.5.0)", "eval-type-backport (>=0.1.3)", "flax (>=0.6.9) ; python_version >= \"3.10\" and python_version <= \"3.13\"", "ml-collections (>=0.1.0)", "msgspec (>=0.18.6)", "mypy (>=1.4.1)", "numpy (>=1.20.0)", "omegaconf (>=2.2.2)", "pydantic (>=2.5.2,!=2.10.0)", "pyright (>=1.1.349,!=1.1.379)", "pytest (>=7.1.2)", "pytest-cov (>=3.0.0)", "pytest-xdist (>=3.5.0)", "pyyaml (>=6.0)", "shtab (>=1.5.6)", "torch (>=1.10.0) ; python_version >= \"3.9\" and python_version <= \"3.13\"", "ty (>=0.0.33)", "universal-pathlib (>=0.2.0)"]
 
 [[package]]
 name = "tzdata"
@@ -5020,4 +5102,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "ede430b08c7a26cf7df4d700db7ad2cc4d718f94827bce35383401afdf1e0cdb"
+content-hash = "b4a12f8fd5d66753ada8745e7536196a003f156dfd7b84e20e35ffa111fc55c6"
