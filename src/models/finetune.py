@@ -1,82 +1,107 @@
+import accelerate
 import torch
 from datasets import load_dataset
 from peft import LoraConfig, prepare_model_for_kbit_training
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from trl import SFTConfig, SFTTrainer
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    TrainingArguments,
+)
+from trl import SFTTrainer
 
-MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.2"
+# 🛠️ PATCH : Correctif pour le conflit de signature unwrap_model entre Transformers & Accelerate
+_orig_unwrap = accelerate.Accelerator.unwrap_model
+
+
+def _patched_unwrap(self, model, *args, **kwargs):
+    kwargs.pop("keep_torch_compile", None)
+    return _orig_unwrap(self, model, *args, **kwargs)
+
+
+accelerate.Accelerator.unwrap_model = _patched_unwrap
 
 
 def train_qlora():
-    print("🚀 Initialisation du Fine-Tuning QLoRA...")
+    model_id = "mistralai/Mistral-7B-Instruct-v0.2"
 
-    # 1. Quantification 4-bit (QLoRA)
+    # 1. Configuration BitsAndBytes 4-bit
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_compute_dtype=torch.float16,
         bnb_4bit_use_double_quant=True,
     )
 
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.padding_side = "right"
-    tokenizer.model_max_length = 512
-
+    # 2. Chargement du Modèle et Tokenizer
+    print("🚀 Chargement du modèle de base Mistral-7B...")
     model = AutoModelForCausalLM.from_pretrained(
-        MODEL_NAME,
+        model_id,
         quantization_config=bnb_config,
         device_map="auto",
+        torch_dtype=torch.float16,
     )
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "right"
 
+    # 3. Préparation du modèle pour QLoRA
     model = prepare_model_for_kbit_training(model)
-
-    # 2. Configuration PEFT / LoRA
     peft_config = LoraConfig(
         r=16,
         lora_alpha=32,
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+        target_modules=[
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ],
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
     )
 
-    # 3. Charger le jeu de données d'entraînement JSONL
-    dataset = load_dataset("json", data_files={"train": "data/processed/train.jsonl"})
+    # 4. Chargement des données d'entraînement
+    dataset = load_dataset(
+        "json", data_files={"train": "data/processed/train.jsonl"}
+    )
 
-    # 4. Configuration SFTConfig (compatible TRL v0.12+)
-    sft_config = SFTConfig(
-        dataset_text_field="text",
+    # 5. Configuration de l'entraînement
+    training_args = TrainingArguments(
         output_dir="models/qlora_checkpoints",
         per_device_train_batch_size=4,
         gradient_accumulation_steps=4,
         learning_rate=2e-4,
         logging_steps=10,
         num_train_epochs=3,
-        optim="paged_adamw_8bit",
         save_strategy="epoch",
-        fp16=False,
-        bf16=True,
-        max_length=512,  # Paramètre de longueur propre à SFTConfig dans les versions récentes
+        fp16=True,
+        optim="paged_adamw_8bit",
+        report_to="none",
     )
 
-    # 5. Instanciation unifiée du Trainer
+    # 6. SFTTrainer
     trainer = SFTTrainer(
         model=model,
         train_dataset=dataset["train"],
         peft_config=peft_config,
-        processing_class=tokenizer,
-        args=sft_config,
+        dataset_text_field="text",
+        max_seq_length=512,
+        tokenizer=tokenizer,
+        args=training_args,
     )
 
-    print("🔥 Lancement de l'entraînement...")
+    print("🔥 Lancement du Fine-Tuning QLoRA...")
     trainer.train()
 
-    # 6. Sauvegarde des poids adaptateurs LoRA
-    print("💾 Sauvegarde de l'adaptateur final...")
+    # 7. Sauvegarde de l'adaptateur final
+    print("💾 Sauvegarde de l'adaptateur QLoRA...")
     trainer.model.save_pretrained("models/final_qlora_adapter")
     tokenizer.save_pretrained("models/final_qlora_adapter")
-    print("✅ Entraînement terminé avec succès !")
+    print("✅ Fine-tuning terminé avec succès !")
 
 
 if __name__ == "__main__":

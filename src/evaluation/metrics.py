@@ -23,12 +23,14 @@ def compute_weighted_f1(
     return weighted_f1, f1_per_class
 
 
-def print_evaluation_summary(y_true: List[str], y_pred: List[str]):
+def print_evaluation_summary(
+    y_true: List[str], y_pred: List[str], model_name: str = "LLM Evaluated"
+):
     """Affiche un récapitulatif clair du F1-Score dans la console."""
     weighted_f1, f1_per_class = compute_weighted_f1(y_true, y_pred)
 
     print("\n" + "=" * 55)
-    print(" 📊 RAPPORT D'ÉVALUATION - F1-SCORE")
+    print(f" 📊 RAPPORT D'ÉVALUATION - F1-SCORE ({model_name})")
     print("=" * 55)
     print(f"Weighted F1-Score Global : {weighted_f1 * 100:.2f}%")
     print(
@@ -39,3 +41,7 @@ def print_evaluation_summary(y_true: List[str], y_pred: List[str]):
     for category, score in f1_per_class.items():
         print(f"  - {category:<25} : {score * 100:.2f}%")
     print("=" * 55 + "\n")
+
+
+# Alias pour assurer la compatibilité avec baseline_evaluator.py
+print_evaluation_report = print_evaluation_summary
